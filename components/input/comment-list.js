@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import classes from './comment-list.module.css';
 
 function CommentList(props) {
+
   const { items } = props;
+
+  const [commentsList ,setCommentsList] = useState();
 
   return (
     <ul className={classes.comments}>

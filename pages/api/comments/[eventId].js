@@ -1,64 +1,37 @@
-import {
-  connectDatabase,
-  insertDocument,
-  getAllDocuments,
-} from '../../../helpers/db-util';
+function handler(req ,res) {
 
-async function handler(req, res) {
-  const eventId = req.query.eventId;
+    const eventId = req.query.eventId;
 
-  let client;
+    
+    if(req.method === 'POST') {
+        
+        const { email ,name ,text } = req.body;
 
-  try {
-    client = await connectDatabase();
-  } catch (error) {
-    res.status(500).json({ message: 'Connecting to the database failed!' });
-    return;
-  }
+        if(!email || !email.includes('@') || name.trim() === '' || !name || text.trim() === '' ) {
+            res.status(422).json({message : "Invalid Inputs"});
+            return;
+        }
 
-  if (req.method === 'POST') {
-    const { email, name, text } = req.body;
+        const newComment = {
+            id : String(new Date().getMilliseconds()),
+            email,
+            name,
+            text
+        }
 
-    if (
-      !email.includes('@') ||
-      !name ||
-      name.trim() === '' ||
-      !text ||
-      text.trim() === ''
-    ) {
-      res.status(422).json({ message: 'Invalid input.' });
-      client.close();
-      return;
+        res.status(201).json({message : "Message Added" ,comment : newComment});
+        console.log(email ,text ,name);
+
     }
+    else if(req.method === 'GET') {
 
-    const newComment = {
-      email,
-      name,
-      text,
-      eventId,
-    };
+        const dummyList = [
+            {id : 'c1' ,name : 'Dashi' ,text : "Some comment here"},
+            {id : 'c2' ,name : 'Mashti' ,text : "Some comment here 222"}
+        ]
 
-    let result;
-
-    try {
-      result = await insertDocument(client, 'comments', newComment);
-      newComment._id = result.insertedId;
-      res.status(201).json({ message: 'Added comment.', comment: newComment });
-    } catch (error) {
-      res.status(500).json({ message: 'Inserting comment failed!' });
+        res.status(200).json({comments : dummyList})
     }
-  }
-
-  if (req.method === 'GET') {
-    try {
-      const documents = await getAllDocuments(client, 'comments', { _id: -1 });
-      res.status(200).json({ comments: documents });
-    } catch (error) {
-      res.status(500).json({ message: 'Getting comments failed.' });
-    }
-  }
-
-  client.close();
 }
 
 export default handler;
