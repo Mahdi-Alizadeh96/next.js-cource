@@ -7,18 +7,20 @@ async function handler(req ,res) {
         const userEmail = req.body.email;
 
         if(!userEmail || !userEmail.includes('@')) {
+
             res.status(422).json({message : 'Invalid Eamil Address'});
+
         } else {
 
             const client = await MongoClient.connect('mongodb+srv://NextjsCource:Gg158008532@cluster0.wnisj.mongodb.net/?retryWrites=true&w=majority');
 
-            const db = client.db('newsletter');
+            const db = client.db('events');
 
-            await db.collection('emails').insertOne({email : userEmail});
+            await db.collection('newsletter').insertOne({email : userEmail});
             
             client.close();
 
-            res.status(201).json({message : 'Signed Up!'})
+            res.status(201).json({message : 'Signed Up!'});
         }
     }
 };

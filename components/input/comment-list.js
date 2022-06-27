@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Loader from '../loader/Loader';
 import classes from './comment-list.module.css';
 
 function CommentList(props) {
@@ -6,6 +7,12 @@ function CommentList(props) {
   const { items } = props;
 
   const [commentsList ,setCommentsList] = useState();
+
+  if(items.length === 0) {
+    return (
+      <Loader/>
+    )
+  }
 
   return (
     <ul className={classes.comments}>
